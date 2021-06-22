@@ -21,37 +21,36 @@ app.config['TESTING'] = True
 
 @app.route('/', methods = ['POST', 'GET'])
 def main_func():
-    dropdown() #make the drop down
-    length = pickfromdropdown()
-    print(length)
-    APIdata = get_url(length)
+    # dropdown() #make the drop down
+    # length = pickfromdropdown()
+    APIdata = get_url()
     API = clean_data(APIdata)
 
     bokeh_graph = plot_chart(API, "Daily High Plot")
     script, div = components(bokeh_graph)
     return render_template("General_attempt.html", the_div=div, the_script=script)
 
-def dropdown():
-    lengths = ['Today', 'This week', '2 years', '20 years']
-    return render_template("General_attempt.html", lengths=lengths)
+# def dropdown():
+#     lengths = ['Today', 'This week', '2 years', '20 years']
+#     return render_template("General_attempt.html", lengths=lengths)
 
-def pickfromdropdown():
-    if request.method == 'POST':
-        length = request.form.get('length')
-    else :
-        length = 'Today'
-
-    if length == 'Today':
-        length = 'TIME_SERIES_INTRADAY'
-    elif length == 'This week':
-        length = 'TIME_SERIES_WEEKLY'
-    elif length == '2 years':
-        length = 'TIME_SERIES_INTRADAY_EXTENDED'
-    elif length == '20 years':
-        length = 'TIME_SERIES_DAILY'
-    else:
-        length = 'TIME_SERIES_WEEKLY'
-    return length
+# def pickfromdropdown():
+#     if request.method == 'POST':
+#         length = request.form.get('length')
+#     else :
+#         length = 'Today'
+#
+#     if length == 'Today':
+#         length = 'TIME_SERIES_INTRADAY'
+#     elif length == 'This week':
+#         length = 'TIME_SERIES_WEEKLY'
+#     elif length == '2 years':
+#         length = 'TIME_SERIES_INTRADAY_EXTENDED'
+#     elif length == '20 years':
+#         length = 'TIME_SERIES_DAILY'
+#     else:
+#         length = 'TIME_SERIES_WEEKLY'
+#     return length
 
 def clean_data(APIdata):
     metadata = APIdata.pop("Meta Data")
@@ -74,7 +73,7 @@ def clean_data(APIdata):
     API['value'] = pd.to_numeric(API['value'], downcast="float")
     return API
 
-def get_url(length):
+def get_url():
 #    load_dotenv()
 #    API_KEY = os.environ['MY_API_KEY']
 #    conn = boto.connect_S3()
@@ -82,6 +81,7 @@ def get_url(length):
     #API_KEY =  conn(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
+        length = request.form.get('length')
         url_nm = ("https://www.alphavantage.co/query?function="+length+"&symbol=" +
           stock + "&interval=5min&apikey=" #request.form['stock_tick']
           + API_KEY )#convert_input(request.form[stock_tick]) +

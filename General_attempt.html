@@ -20,6 +20,12 @@
      <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" rel="stylesheet">
         
         
+	<figure class="text-center">
+		<p>This is <a href="https://www.linkedin.com/in/aroob-abdelhamid/">Aroob Abdelhamid's </a> TDI Milestone Stock Prices Project. </p>
+			Enjoy!
+	</figure>
+
+
           
         <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.3.2.min.js" integrity="sha384-XypntL49z55iwGVUW4qsEu83zKL3XEcz0MjuGOQ9SlaaQ68X/g+k1FcioZi7oQAc" crossorigin="anonymous"></script>
         <script type="text/javascript">
@@ -34,42 +40,38 @@
   
   <body>
     
-	<figure class="text-center">
-  <blockquote class="blockquote">
-    <p>This is <a href="https://www.linkedin.com/in/aroob-abdelhamid/">Aroob Abdelhamid's </a> TDI Milestone Stock Prices Project. </p>
-  </blockquote>
-  <figcaption class="blockquote-footer">
-    Enjoy!
-  </figcaption>
-</figure>
       
         
 		
 		
-		<form method="POST">
-			<div class='col-xs-12 col-sm-12 col-md-10 col-lg-10'>
+	<form method="POST">
+		<div class="row g-3">
+			<div class='col-sm-10'>
 				<div class='input-group'>
 					<input class='form-control' type='text' name='stock_tick'
 						   placeholder='Enter stock ticker i.e. GOOG, IBM, etc...'/>
 					<span class="input-group-btn">
 					  <button type='submit' class='btn btn-default'>
 						<span class='glyphicon glyphicon-search'></span>
-						<style> form {width:100%;height:450px;margin:auto;position:relative;} input {width:100%;height: 25px; }</style> 
 					  </button>
 					</span>
 				</div>
 			</div>
-		</form>
 
 	
-		
-		<select name="length" method="GET" action="/">
-		  <option value="{{lengths[0]}}" selected>{{lengths[0]}}</option>
-		  {% for length in lengths[1:] %}
-			<option value="{{length}}">{{length}}</option>
-		  {% endfor %}
-		</select>
-		
+			<div class="col-sm-10">
+				<label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
+				<select class="form-select" id="inlineFormSelectPref" name = 'length'>
+					<option selected>Choose time length...</option>
+					<option value="TIME_SERIES_INTRADAY">Today</option>
+					<option value="TIME_SERIES_WEEKLY">This week</option>
+					<option value="TIME_SERIES_INTRADAY_EXTENDED">2 years</option>
+					<option value="TIME_SERIES_DAILY">20 years</option>
+				</select>
+			<div>
+		<div>
+	</form>
+
           
             
               {{the_div|safe}}
