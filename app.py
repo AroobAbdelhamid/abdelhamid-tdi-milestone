@@ -21,12 +21,17 @@ app.config['TESTING'] = True
 
 @app.route('/', methods = ['POST', 'GET'])
 def main_func():
+    length = dropdown()
     APIdata = get_url()
     API = clean_data(APIdata)
 
     bokeh_graph = plot_chart(API, "Daily High Plot")
     script, div = components(bokeh_graph)
     return render_template("General_attempt.html", the_div=div, the_script=script)
+
+def dropdown():
+    length = ['Today', 'This week', '2 years', '20 years']
+    return length
 
 def clean_data(APIdata):
     metadata = APIdata.pop("Meta Data")
