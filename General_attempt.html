@@ -62,10 +62,11 @@
 
 	
 		
-		<select name= colours method="GET" action="/">
-			{% for length in length %}
-				<option value= "{{length}}" SELECTED>{{length}}</option>"
-			{% endfor %}
+		<select name="length" method="GET" action="/">
+		  <option value="{{lengths[0]}}" selected>{{lengths[0]}}</option>
+		  {% for length in lengths[1:] %}
+			<option value="{{length}}">{{length}}</option>
+		  {% endfor %}
 		</select>
 		
           

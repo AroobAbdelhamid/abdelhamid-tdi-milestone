@@ -27,10 +27,22 @@ def main_func():
 
     bokeh_graph = plot_chart(API, "Daily High Plot")
     script, div = components(bokeh_graph)
-    return render_template("General_attempt.html", the_div=div, the_script=script)
+    return render_template("General_attempt.html", the_div=div, the_script=script, length =lengths)
 
 def dropdown():
-    length = ['Today', 'This week', '2 years', '20 years']
+    lengths = ['Today', 'This week', '2 years', '20 years']
+    return length
+
+    if request.method == 'POST':
+        stock = request.form.get("stock_tick")
+        url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
+          stock + "&interval=5min&apikey=" #request.form['stock_tick']
+          + API_KEY )#convert_input(request.form[stock_tick]) +
+            #+"+4PJK6E44KAP57MW0"
+    else :
+         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM" +
+          "&interval=5min&apikey=" + API_KEY )
+
     return length
 
 def clean_data(APIdata):
@@ -69,7 +81,7 @@ def get_url():
           + API_KEY )#convert_input(request.form[stock_tick]) +
             #+"+4PJK6E44KAP57MW0"
     else :
-         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=GOOG" +
+         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM" +
           "&interval=5min&apikey=" + API_KEY )
 
     r = requests.get(url_nm)
