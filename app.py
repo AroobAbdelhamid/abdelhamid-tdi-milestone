@@ -31,7 +31,7 @@ def main_func():
 
 def dropdown():
     lengths = ['Today', 'This week', '2 years', '20 years']
-    return length
+    return lengths
 
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
