@@ -50,7 +50,7 @@ def pickfromdropdown():
     elif length == '20 years':
         length = 'TIME_SERIES_DAILY'
     else:
-        length = 'TIME_SERIES_INTRADAY'
+        length = 'TIME_SERIES_WEEKLY'
     return length
 
 def clean_data(APIdata):
@@ -82,7 +82,7 @@ def get_url(length):
     #API_KEY =  conn(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
-        url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
+        url_nm = ("https://www.alphavantage.co/query?function="+length+"&symbol=" +
           stock + "&interval=5min&apikey=" #request.form['stock_tick']
           + API_KEY )#convert_input(request.form[stock_tick]) +
             #+"+4PJK6E44KAP57MW0"
