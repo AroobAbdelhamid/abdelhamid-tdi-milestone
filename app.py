@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 #from dotenv import load_dotenv
 # import boto3
-#import boto
+import boto
 #from boto3.s3.connection import S3Connection #can't use dotenv in heroku....
 import os
 import re #string parsing
@@ -84,7 +84,8 @@ def plot_chart(API, title, hover_tool=None):
 
     bokeh_graph.line(x,y)
     bokeh_graph.xaxis.axis_label = "date/time of day"
-    bokeh_graph.yaxis.axis_label = "Price ($) for "+request.form.get("stock_tick")
+    xaxstr = "Price ($) for "+request.form.get("stock_tick")
+    bokeh_graph.yaxis.axis_label = xaxstr
     bokeh_graph.toolbar.logo = None
     return bokeh_graph
 
