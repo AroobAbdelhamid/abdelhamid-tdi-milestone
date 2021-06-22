@@ -82,9 +82,13 @@ def plot_chart(API, title, hover_tool=None):
     if hover_tool:
         tools = [hover_tool,]
 
+    if request.method == 'POST':
+        xaxstr = "Price ($) for "+request.form.get("stock_tick")
+    else :
+         xaxstr = "Price ($) for GOOG"
     bokeh_graph.line(x,y)
-    bokeh_graph.xaxis.axis_label = "date/time of day"
-    bokeh_graph.yaxis.axis_label = "Price ($) for "+request.form.get("stock_tick")
+    bokeh_graph.xaxis.axis_label = "date"
+    bokeh_graph.yaxis.axis_label = xaxstr
     bokeh_graph.toolbar.logo = None
     return bokeh_graph
 
