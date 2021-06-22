@@ -23,6 +23,7 @@ app.config['TESTING'] = True
 def main_func():
     dropdown() #make the drop down
     length = pickfromdropdown()
+    print(length)
     APIdata = get_url(length)
     API = clean_data(APIdata)
 
@@ -73,7 +74,7 @@ def clean_data(APIdata):
     API['value'] = pd.to_numeric(API['value'], downcast="float")
     return API
 
-def get_url():
+def get_url(length):
 #    load_dotenv()
 #    API_KEY = os.environ['MY_API_KEY']
 #    conn = boto.connect_S3()
