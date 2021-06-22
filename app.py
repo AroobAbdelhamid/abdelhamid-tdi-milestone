@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 #from dotenv import load_dotenv
 # import boto3
-# from boto3.s3.connection import S3Connection #can't use dotenv in heroku....
+from boto3.s3.connection import S3Connection #can't use dotenv in heroku....
 import os
 import re #string parsing
 import requests #to download html data
@@ -49,21 +49,20 @@ def clean_data(APIdata):
     return API
 
 def get_url():
-
+    #THIS IS A CHANGE
+    print("hello")
 #    load_dotenv()
 #    API_KEY = os.environ['MY_API_KEY']
-    API_KEY = '4PJK6E44KAP57MW0'## S3Connection(os.environ['MY_API_KEY'])
+    API_KEY =  S3Connection(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
           stock + "&interval=5min&apikey=" #request.form['stock_tick']
           + API_KEY )#convert_input(request.form[stock_tick]) +
             #+"+4PJK6E44KAP57MW0"
-        print("we are at post", url_nm)
     else :
          url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=GOOG" +
           "&interval=5min&apikey=" + API_KEY )
-         print("we are at get", url_nm)
 
     r = requests.get(url_nm)
     APIdata = r.json()
@@ -82,7 +81,7 @@ def plot_chart(API, title, hover_tool=None):
 
     bokeh_graph.line(x,y)
     bokeh_graph.xaxis.axis_label = "date/time of day"
-    bokeh_graph.yaxis.axis_label = "Price ($)"
+    bokeh_graph.yaxis.axis_label = "Price ($) for "+request.form.get("stock_tick")
     bokeh_graph.toolbar.logo = None
     return bokeh_graph
 
