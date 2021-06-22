@@ -54,7 +54,7 @@ def get_url():
     print("hello")
 #    load_dotenv()
 #    API_KEY = os.environ['MY_API_KEY']
-    conn = boto.connect_S3()
+#    conn = boto.connect_S3()
     API_KEY = '4PJK6E44KAP57MW0'# S3Connection(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
     #API_KEY =  conn(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
     if request.method == 'POST':
