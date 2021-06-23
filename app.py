@@ -12,7 +12,7 @@ from bokeh.plotting import figure, output_file, save
 from bokeh.io import output_notebook, push_notebook, show, save
 from bokeh.resources import CDN
 from bokeh.embed import file_html, components
-from bokeh.models import (HoverTool)
+from bokeh.models import HoverTool, CrosshairTool
 #HELLO
 app = Flask(__name__)
 app.config['ENV'] = 'development'
@@ -23,41 +23,32 @@ app.config['TESTING'] = True
 def main_func():
     # dropdown() #make the drop down
     # length = pickfromdropdown()
-    APIdata = get_url()
-    API = clean_data(APIdata)
+    #APIdata =
+    API, stock = get_url() #clean_data(APIdata)
 
-    bokeh_graph = plot_chart(API, "Daily High Plot")
+    type = get_type()
+
+    if request.method == 'POST':
+        titstr = "Stock Data For " + stock
+    else:
+        titstr = "Stock Data For IBM"
+
+    bokeh_graph = plot_chart(API, titstr, type)
     script, div = components(bokeh_graph)
-    return render_template("General_attempt.html", the_div=div, the_script=script)
+    return render_template("stock_price_app.html", the_div=div, the_script=script)
 
-# def dropdown():
-#     lengths = ['Today', 'This week', '2 years', '20 years']
-#     return render_template("General_attempt.html", lengths=lengths)
-
-# def pickfromdropdown():
-#     if request.method == 'POST':
-#         length = request.form.get('length')
-#     else :
-#         length = 'Today'
-#
-#     if length == 'Today':
-#         length = 'TIME_SERIES_INTRADAY'
-#     elif length == 'This week':
-#         length = 'TIME_SERIES_WEEKLY'
-#     elif length == '2 years':
-#         length = 'TIME_SERIES_INTRADAY_EXTENDED'
-#     elif length == '20 years':
-#         length = 'TIME_SERIES_DAILY'
-#     else:
-#         length = 'TIME_SERIES_WEEKLY'
-#     return length
+def get_type():
+    if request.method == 'POST':
+        type = request.form.get('type')
+    else:
+        type = 'high'
+    return type
 
 def clean_data(APIdata):
     metadata = APIdata.pop("Meta Data")
-    print (metadata)
-    #print(APIdata)
-    #API = pd.DataFrame.from_dict(APIdata)
-    API = (pd.json_normalize(APIdata['Time Series (5min)'])).T
+
+    metadatastr = 'Time Series (60min)'
+    API = (pd.json_normalize(APIdata[ metadatastr ])).T
     API2= list((API).index)
 
     def conv_dt(fnx, dt):
@@ -74,45 +65,56 @@ def clean_data(APIdata):
     return API
 
 def get_url():
-#    load_dotenv()
-#    API_KEY = os.environ['MY_API_KEY']
-#    conn = boto.connect_S3()
+    print(request.method)
     API_KEY = '4PJK6E44KAP57MW0'# S3Connection(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
-    #API_KEY =  conn(os.environ['MY_API_KEY']) #'4PJK6E44KAP57MW0'
+
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
-        length = request.form.get('length')
+        length = 'TIME_SERIES_INTRADAY' #request.form.get('length')
+
         url_nm = ("https://www.alphavantage.co/query?function="+length+"&symbol=" +
-          stock + "&interval=5min&apikey=" #request.form['stock_tick']
-          + API_KEY )#convert_input(request.form[stock_tick]) +
-            #+"+4PJK6E44KAP57MW0"
+          stock + "&interval=60min&outputsize=full&apikey=" #request.form['stock_tick']
+          + API_KEY )
     else :
          url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM" +
-          "&interval=5min&apikey=" + API_KEY )
+          "&interval=60min&outputsize=full&apikey=" + API_KEY )
+         stock = 'IBM'
 
     r = requests.get(url_nm)
     APIdata = r.json()
-    return APIdata
 
-def plot_chart(API, title, hover_tool=None):
-    hover = create_hover_tool()
-    bokeh_graph = figure(title = title, x_axis_type='datetime', plot_height=600, plot_width = 600)
+    API = clean_data(APIdata)
+    return API, stock
 
-    y=API[API['statetxt']=='high'].value
-    x=API[API['statetxt']=='high'].datetime
+def plot_chart(API, title, type):
+    bokeh_graph = figure(title = title, x_axis_type='datetime', plot_height=600, plot_width = 1000)
 
-    tools = []
-    if hover_tool:
-        tools = [hover_tool,]
+    y=API[API['statetxt']==type].value
+    x=API[API['statetxt']==type].datetime
 
-    bokeh_graph.line(x,y)
-    bokeh_graph.xaxis.axis_label = "date/time of day"
+    # tools = []
+    # if hover_tool:
+    #     tools = [hover_tool,]
+
+    bokeh_graph.line(x,y, line_color = 'red', line_width=2,  hover_line_color='darkgrey', legend_label=type)
+    bokeh_graph.xaxis.axis_label = "Date/Time"
+    bokeh_graph.xaxis.axis_label_text_font_size = "16pt"
+    bokeh_graph.xaxis.major_label_text_font_size = "16pt"
+    bokeh_graph.yaxis.major_label_text_font_size = "16pt"
+    bokeh_graph.title.text_font_size = '20pt'
     if request.method == 'POST':
-        yaxstr = "Price ($) for "+request.form.get("stock_tick")
+        if type == 'volume':
+            yaxstr = "Num of Units for "+request.form.get("stock_tick")
+        else:
+            yaxstr = "Price ($) for "+request.form.get("stock_tick")
     else:
-        yaxstr = "Price ($) for GOOG"
+        yaxstr = "Price ($) for IBM"
     bokeh_graph.yaxis.axis_label = yaxstr
+    bokeh_graph.yaxis.axis_label_text_font_size = "20pt"
     bokeh_graph.toolbar.logo = None
+    bokeh_graph.add_tools(HoverTool(tooltips=[("Date", '@x{%F %H:00}'), (type, '@y')], formatters={'@x': 'datetime'}))
+    #bokeh_graph.add_tools(CrosshairTool())
+    hover = create_hover_tool()
     return bokeh_graph
 
 def create_hover_tool():
@@ -128,7 +130,8 @@ def create_hover_tool():
         <span class="hover-tooltip">$@costs{0.00}</span>
       </div>
     """
-    return HoverTool(tooltips=hover_html)
+    return HoverTool(tooltips=[('date', '@x'), ('Value', '@y')],
+          formatters={'@x' : 'datetime'})
 
 def index():
   return render_template('index.html')
